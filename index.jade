@@ -1,0 +1,35 @@
+//
+   Created by Mikk on 20.10.2015.
+
+doctype html
+
+html
+  head
+    meta(http-equiv="Content-Type", content="text/html; charset=UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title SimplifyS3D
+    link(href="http://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+    link(href="css/materialize.min.css", rel="stylesheet", media="screen,projection")
+    script(src="js/jquery-2.1.4.min.js")
+    script(src="js/materialize.min.js")
+    script(src="js/LineReader.js")
+    script(src="js/FileSaver.min.js")
+    script(src="js/app.js")
+  body
+    div.row
+      form#s3d.col.s12
+        div.row
+          div.input-field.col.s12
+            input#xyResolution.validate(type="number", min="0", step="0.01", value="0.01")
+            label(for="xyResolution") XY Resolution
+        div.row
+          div.input-field.col.s12
+            input#eResolution.validate(type="number", min="0", step="0.0005", value="0.0005")
+            label(for="eResolution") E Resolution
+        div.row
+          div.input-field.file-field
+            div.btn
+              span File
+              input#file(type="file")
+            div.file-path-wrapper
+              input.file-path.validate(type="text")
