@@ -136,8 +136,10 @@ function parseLine(line, next) {
  * Send the file to client
  */
 function returnFile() {
-  console.log("Total lines: " + lineCount);
-  console.log("Duplicate lines: " + duplicateCount);
+  var stats = $("#stats");
+  stats.append(currentFile + "<br>");
+  stats.append("Total lines: " + lineCount + "<br>");
+  stats.append("Duplicate lines: " + duplicateCount + "<br>");
   var blob = new Blob([output], {
     type: "text/plain;charset=utf-8"
   });
