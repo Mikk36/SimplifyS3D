@@ -28,10 +28,10 @@ function fileHandler() {
   input.parent().addClass("disabled");
   jQuery.each(this.files, function (index, file) {
     console.log(file.name + " loaded");
-    currentFile = file.name;
+    var fileName = file.name;
     var reader = new LineReader();
     reader.on("line", parseLine);
-    reader.on("end", returnFile);
+    reader.on("end", returnFile.bind(this, fileName));
     reader.read(file);
   });
   input.val(null);
@@ -137,16 +137,17 @@ function parseLine(line, next) {
 
 /**
  * Send the file to client
+ * @param {string} fileName
  */
-function returnFile() {
+function returnFile(fileName) {
   var stats = $("#stats");
-  stats.append(currentFile + "<br>");
-  stats.append("Total lines: " + lineCount + "<br>");
-  stats.append("Duplicate lines: " + duplicateCount + "<br>");
+  stats.append(fileName + "<br>");
+  stats.append("<span style='font-size: 0.75em'>Total lines: " + lineCount + "<br>" +
+    "Duplicate lines: " + duplicateCount + "<br></span>");
   var blob = new Blob([output], {
     type: "text/plain;charset=utf-8"
   });
-  saveAs(blob, currentFile.substring(0, currentFile.lastIndexOf(".")) + "_filtered.gcode");
+  saveAs(blob, fileName.substring(0, fileName.lastIndexOf(".")) + "_filtered.gcode");
   resetProgress();
 }
 
@@ -167,7 +168,6 @@ function resetProgress() {
 }
 
 var fileCount = 0;
-var currentFile = "";
 var lineCount = 0;
 var duplicateCount = 0;
 var relativeMotion = false;
