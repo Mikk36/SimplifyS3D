@@ -23,6 +23,9 @@ function init() {
 }
 
 function fileHandler() {
+  fileCount = this.files.length;
+  var input = $("#file");
+  input.parent().addClass("disabled");
   jQuery.each(this.files, function (index, file) {
     console.log(file.name + " loaded");
     currentFile = file.name;
@@ -31,7 +34,7 @@ function fileHandler() {
     reader.on("end", returnFile);
     reader.read(file);
   });
-  $("#file").val(null);
+  input.val(null);
 }
 
 /**
@@ -155,8 +158,15 @@ function resetProgress() {
   duplicateCount = 0;
   output = "";
   previousLine = "";
+  if(fileCount > 0) {
+    fileCount--;
+  }
+  if(fileCount == 0) {
+    $("#file").parent().removeClass("disabled")
+  }
 }
 
+var fileCount = 0;
 var currentFile = "";
 var lineCount = 0;
 var duplicateCount = 0;
