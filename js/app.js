@@ -23,8 +23,6 @@ function init() {
 }
 
 function fileHandler() {
-  lineCount = 0;
-  duplicateCount = 0;
   jQuery.each(this.files, function (index, file) {
     console.log(file.name + " loaded");
     currentFile = file.name;
@@ -144,6 +142,17 @@ function returnFile() {
     type: "text/plain;charset=utf-8"
   });
   saveAs(blob, currentFile.substring(0, currentFile.lastIndexOf(".")) + "_filtered.gcode");
+  resetProgress();
+}
+
+/**
+ * Reset counters and data after sending data to client
+ */
+function resetProgress() {
+  lineCount = 0;
+  duplicateCount = 0;
+  output = "";
+  previousLine = "";
 }
 
 var currentFile = "";
