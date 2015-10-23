@@ -23,7 +23,7 @@ function Simplifier(file) {
  * @param {string} line
  * @returns {boolean}
  */
-Simplifier.prototype.isRedundant = function(previousLine, line) {
+Simplifier.prototype.isRedundant = function (previousLine, line) {
   if (previousLine.substr(0, 2) !== "G1" || line.substr(0, 2) !== "G1") {
     return false;
   }
@@ -53,7 +53,7 @@ Simplifier.prototype.isRedundant = function(previousLine, line) {
  * @param {string} line
  * @returns {boolean|number}
  */
-Simplifier.prototype.xyDistance = function(previousLine, line) {
+Simplifier.prototype.xyDistance = function (previousLine, line) {
   var xPrevious = this.getParameter(previousLine, "x");
   if (xPrevious === false) {
     return false;
@@ -81,7 +81,7 @@ Simplifier.prototype.xyDistance = function(previousLine, line) {
  * @param {string} parameter
  * @returns {boolean|number} False if not found, number otherwise
  */
-Simplifier.prototype.getParameter =  function(line, parameter) {
+Simplifier.prototype.getParameter = function (line, parameter) {
   var regex = new RegExp(parameter.toUpperCase() + "([-.0-9]*)");
   var match = line.match(regex);
 
@@ -99,13 +99,13 @@ Simplifier.prototype.getParameter =  function(line, parameter) {
  * @param eof
  */
 //function parseLine(line, next) {
-Simplifier.prototype.parseLines = function(err, index, lines, eof) {
-  if(err) {
+Simplifier.prototype.parseLines = function (err, index, lines, eof) {
+  if (err) {
     console.log(err);
     return;
   }
 
-  for(var i = 0; i < lines.length; i++) {
+  for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
 
     this.lineCount++;
@@ -124,7 +124,7 @@ Simplifier.prototype.parseLines = function(err, index, lines, eof) {
     this.output += line + "\n";
   }
 
-  if(eof) {
+  if (eof) {
     this.returnFile();
     return;
   }
@@ -135,7 +135,7 @@ Simplifier.prototype.parseLines = function(err, index, lines, eof) {
 /**
  * Send the file to client
  */
-Simplifier.prototype.returnFile = function() {
+Simplifier.prototype.returnFile = function () {
   var stats = $("#stats");
   stats.append(this.file.name + "<br>");
   stats.append("<span style='font-size: 0.75em'>Total lines: " + this.lineCount + "<br>" +
@@ -144,21 +144,8 @@ Simplifier.prototype.returnFile = function() {
     type: "text/plain;charset=utf-8"
   });
   saveAs(blob, this.file.name.substring(0, this.file.name.lastIndexOf(".")) + "_filtered.gcode");
-  resetProgress();
+  delete simplifiers[this.file.name];
 };
-
-/**
- * Reset counters and data after sending data to client
- */
-function resetProgress() {
-  if(fileCount > 0) {
-    fileCount--;
-  }
-  if(fileCount == 0) {
-    $("#file").parent().removeClass("disabled");
-    delete simplifiers[this.file.name];
-  }
-}
 
 function init() {
   console.log("Starting app");
@@ -168,6 +155,8 @@ function init() {
     console.log('The File APIs are not fully supported in this browser.');
   }
   $("#file").change(fileHandler);
+  window.addEventListener("dragover", dragOverHandler, true);
+  window.addEventListener("drop", fileHandler, true);
   $("#s3d").on("submit", function (event) {
     event.preventDefault();
   });
@@ -181,18 +170,35 @@ function init() {
   });
 }
 
-function fileHandler() {
-  fileCount = this.files.length;
-  var input = $("#file");
-  input.parent().addClass("disabled");
-  jQuery.each(this.files, function (index, file) {
+/**
+ * @param {jQuery.Event} event
+ */
+function dragOverHandler(event) {
+  event.preventDefault();
+  console.log("I'm being dragged onto");
+}
+
+/**
+ * Handle a file submission
+ * @param event
+ */
+function fileHandler(event) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  var files = this.files;
+  if (event.type === "drop") {
+    files = event.dataTransfer.files;
+  }
+
+  jQuery.each(files, function (index, file) {
     simplifiers[file.name] = new Simplifier(file);
   });
-  input.val(null);
+
+  $("#file").val(null);
 }
 
 var simplifiers = {};
-var fileCount = 0;
 var xyResolution = 0.01;
 var eResolution = 0.0005;
 
